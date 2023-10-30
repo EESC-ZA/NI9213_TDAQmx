@@ -738,11 +738,8 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
                 myTask.Control(TaskAction.Verify);
 
                 analogInReader = new AnalogMultiChannelReader(myTask.Stream);
-
                 
                 runningTask = myTask;
-
-                //MessageBox.Show(myTask.AIChannels.Count.ToString());
                 
                 InitializeDataTable(myTask.AIChannels, ref dataTable);
                 acquisitionDataGrid.DataSource = dataTable;
