@@ -13,3 +13,20 @@ C:\Users\Public\Documents\National Instruments\NI-DAQ\Examples\DotNET4.5\Analog 
 C:\Users\Public\Documents\National Instruments\NI-DAQ\Examples\DotNET4.5\Analog In\Measure Temperature\ContAcqThermocoupleSamples_IntClk\CS\obj\Debug\ContAcqThermocoupleSamples_IntClk.2012.csproj.CopyComplete
 C:\Users\Public\Documents\National Instruments\NI-DAQ\Examples\DotNET4.5\Analog In\Measure Temperature\ContAcqThermocoupleSamples_IntClk\CS\obj\Debug\ContAcqThermocoupleSamples_IntClk.exe
 C:\Users\Public\Documents\National Instruments\NI-DAQ\Examples\DotNET4.5\Analog In\Measure Temperature\ContAcqThermocoupleSamples_IntClk\CS\obj\Debug\ContAcqThermocoupleSamples_IntClk.pdb
+C:\Users\mcg\Documents\GitHub\NI9213_T\bin\Debug\ContAcqThermocoupleSamples_IntClk.exe.config
+C:\Users\mcg\Documents\GitHub\NI9213_T\bin\Debug\ContAcqThermocoupleSamples_IntClk.exe
+C:\Users\mcg\Documents\GitHub\NI9213_T\bin\Debug\ContAcqThermocoupleSamples_IntClk.pdb
+C:\Users\mcg\Documents\GitHub\NI9213_T\bin\Debug\NationalInstruments.Common.dll
+C:\Users\mcg\Documents\GitHub\NI9213_T\bin\Debug\NationalInstruments.DAQmx.dll
+C:\Users\mcg\Documents\GitHub\NI9213_T\bin\Debug\NationalInstruments.Common.xml
+C:\Users\mcg\Documents\GitHub\NI9213_T\bin\Debug\NationalInstruments.DAQmx.xml
+C:\Users\mcg\Documents\GitHub\NI9213_T\obj\Debug\ContAcqThermocoupleSamples_IntClk.2012.csproj.AssemblyReference.cache
+C:\Users\mcg\Documents\GitHub\NI9213_T\obj\Debug\ContAcqThermocoupleSamples_IntClk.2012.csproj.SuggestedBindingRedirects.cache
+C:\Users\mcg\Documents\GitHub\NI9213_T\obj\Debug\NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk.AddChannelForm.resources
+C:\Users\mcg\Documents\GitHub\NI9213_T\obj\Debug\NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk.MainForm.resources
+C:\Users\mcg\Documents\GitHub\NI9213_T\obj\Debug\ContAcqThermocoupleSamples_IntClk.2012.csproj.GenerateResource.cache
+C:\Users\mcg\Documents\GitHub\NI9213_T\obj\Debug\ContAcqThermocoupleSamples_IntClk.2012.csproj.CoreCompileInputs.cache
+C:\Users\mcg\Documents\GitHub\NI9213_T\obj\Debug\ContAcqThermocoupleSamples_IntClk.2012.csproj.CopyComplete
+C:\Users\mcg\Documents\GitHub\NI9213_T\obj\Debug\ContAcqThermocoupleSamples_IntClk.exe
+C:\Users\mcg\Documents\GitHub\NI9213_T\obj\Debug\ContAcqThermocoupleSamples_IntClk.pdb
+C:\Users\mcg\Documents\GitHub\NI9213_T\obj\Debug\NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk.GlobalVariablesParam.resources

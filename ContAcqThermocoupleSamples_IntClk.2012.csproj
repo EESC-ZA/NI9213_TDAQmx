@@ -112,12 +112,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddChannelForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddChannelForm.Designer.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DAQmxChannel.cs" />
+    <Compile Include="GlobalVariablesParam.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GlobalVariablesParam.Designer.cs">
+      <DependentUpon>GlobalVariablesParam.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <EmbeddedResource Include="AddChannelForm.resx" />
+    <EmbeddedResource Include="GlobalVariablesParam.resx">
+      <DependentUpon>GlobalVariablesParam.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

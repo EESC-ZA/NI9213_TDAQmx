@@ -88,6 +88,9 @@ using System.Data;
 using NationalInstruments.DAQmx;
 using NationalInstruments.Restricted;
 using System.Runtime.Remoting.Channels;
+using DAQmxProj;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
 {
@@ -106,33 +109,13 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
         private DataTable dataTable = null;
         private int NumberOfChannels = 0;
         private string[] _channels;
-        internal System.Windows.Forms.GroupBox highAccuracySettingsGroupBox;
-        internal System.Windows.Forms.ComboBox autoZeroModeComboBox;
-        internal System.Windows.Forms.Label autoZeroModeLabel;
         internal System.Windows.Forms.GroupBox acquisitionResultsGroupBox;
-        internal System.Windows.Forms.Label resultLabel;
-        internal System.Windows.Forms.DataGrid acquisitionDataGrid;
         internal System.Windows.Forms.GroupBox channelParametersGroupBox;
         internal System.Windows.Forms.Label maximumLabel;
         internal System.Windows.Forms.Label minimumLabel;
         internal System.Windows.Forms.Label physicalChannelLabel;
         internal System.Windows.Forms.Button startButton;
         internal System.Windows.Forms.Button stopButton;
-        internal System.Windows.Forms.GroupBox timingParametersGroupBox;
-        internal System.Windows.Forms.NumericUpDown rateNumeric;
-        internal System.Windows.Forms.Label rateLabel;
-        internal System.Windows.Forms.GroupBox thermocoupleParametersGroupBox;
-        internal System.Windows.Forms.ComboBox thermocoupleTypeComboBox;
-        internal System.Windows.Forms.Label thermocoupleTypeLabel;
-        internal System.Windows.Forms.GroupBox coldJunctionParametersGroupBox;
-        internal System.Windows.Forms.NumericUpDown cjcValueNumeric;
-        internal System.Windows.Forms.Label cjcValueLabel;
-        internal System.Windows.Forms.Label cjcChannelLabel;
-        internal System.Windows.Forms.Label cjcSourceLabel;
-        internal System.Windows.Forms.ComboBox cjcSourceComboBox;
-        internal System.Windows.Forms.TextBox cjcChannelTextBox;
-        internal System.Windows.Forms.Label scxiModuleLabel;
-        internal System.Windows.Forms.CheckBox scxiModuleCheckBox;
         internal System.Windows.Forms.NumericUpDown minimumValueNumeric;
         internal System.Windows.Forms.NumericUpDown maximumValueNumeric;
         private System.Windows.Forms.ComboBox physicalChannelComboBox;
@@ -140,21 +123,35 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.Container components = null;
+        private FlowLayoutPanel channelsflowLayoutPanel;
 
+        DAQmxChannel channel;
+        List <DAQmxChannel> daqmxChannels;
+        private MenuStrip DAQmenuStrip;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem newToolStripMenuItem;
+        private ToolStripMenuItem channelToolStripMenuItem;
+        public GlobalVariablesParam GlobalParam;
         public MainForm()
         {
             //
             // Required for Windows Form Designer support
             //
             InitializeComponent();
-            cjcSourceComboBox.SelectedIndex = 1;
-            autoZeroModeComboBox.SelectedIndex = 0;
-            thermocoupleTypeComboBox.SelectedIndex = 2;
+
+            daqmxChannels = new List<DAQmxChannel>();
+            GlobalParam = new GlobalVariablesParam();
+            GlobalParam.SubmitButton.Click += SubmitButton_Click;
+
+            GlobalParam.cjcSourceComboBox.SelectedIndex = 1;
+            GlobalParam.autoZeroModeComboBox.SelectedIndex = 0;
+            GlobalParam.thermocoupleTypeComboBox.SelectedIndex = 2;
             myAsyncCallback = new AsyncCallback(AnalogInCallback);
             dataTable = new DataTable();
 
-            physicalChannelComboBox.Items.AddRange(DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.AI, PhysicalChannelAccess.External));
+            
 
+            physicalChannelComboBox.Items.AddRange(DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.AI, PhysicalChannelAccess.External));
             _channels = DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.AI, PhysicalChannelAccess.External);
 
 
@@ -163,6 +160,8 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
             if (physicalChannelComboBox.Items.Count > 0)
                 physicalChannelComboBox.SelectedIndex = 0;
         }
+
+
 
         /// <summary>
         /// Clean up any resources being used.
@@ -192,14 +191,8 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.highAccuracySettingsGroupBox = new System.Windows.Forms.GroupBox();
-            this.autoZeroModeComboBox = new System.Windows.Forms.ComboBox();
-            this.scxiModuleLabel = new System.Windows.Forms.Label();
-            this.scxiModuleCheckBox = new System.Windows.Forms.CheckBox();
-            this.autoZeroModeLabel = new System.Windows.Forms.Label();
             this.acquisitionResultsGroupBox = new System.Windows.Forms.GroupBox();
-            this.resultLabel = new System.Windows.Forms.Label();
-            this.acquisitionDataGrid = new System.Windows.Forms.DataGrid();
+            this.channelsflowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.channelParametersGroupBox = new System.Windows.Forms.GroupBox();
             this.physicalChannelComboBox = new System.Windows.Forms.ComboBox();
             this.minimumValueNumeric = new System.Windows.Forms.NumericUpDown();
@@ -209,117 +202,36 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
             this.physicalChannelLabel = new System.Windows.Forms.Label();
             this.startButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
-            this.timingParametersGroupBox = new System.Windows.Forms.GroupBox();
-            this.rateNumeric = new System.Windows.Forms.NumericUpDown();
-            this.rateLabel = new System.Windows.Forms.Label();
-            this.thermocoupleParametersGroupBox = new System.Windows.Forms.GroupBox();
-            this.thermocoupleTypeComboBox = new System.Windows.Forms.ComboBox();
-            this.thermocoupleTypeLabel = new System.Windows.Forms.Label();
-            this.coldJunctionParametersGroupBox = new System.Windows.Forms.GroupBox();
-            this.cjcValueNumeric = new System.Windows.Forms.NumericUpDown();
-            this.cjcValueLabel = new System.Windows.Forms.Label();
-            this.cjcChannelLabel = new System.Windows.Forms.Label();
-            this.cjcSourceLabel = new System.Windows.Forms.Label();
-            this.cjcSourceComboBox = new System.Windows.Forms.ComboBox();
-            this.cjcChannelTextBox = new System.Windows.Forms.TextBox();
-            this.highAccuracySettingsGroupBox.SuspendLayout();
+            this.DAQmenuStrip = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.channelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.acquisitionResultsGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.acquisitionDataGrid)).BeginInit();
+            this.channelsflowLayoutPanel.SuspendLayout();
             this.channelParametersGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.minimumValueNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maximumValueNumeric)).BeginInit();
-            this.timingParametersGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.rateNumeric)).BeginInit();
-            this.thermocoupleParametersGroupBox.SuspendLayout();
-            this.coldJunctionParametersGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cjcValueNumeric)).BeginInit();
+            this.DAQmenuStrip.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // highAccuracySettingsGroupBox
-            // 
-            this.highAccuracySettingsGroupBox.Controls.Add(this.autoZeroModeComboBox);
-            this.highAccuracySettingsGroupBox.Controls.Add(this.scxiModuleLabel);
-            this.highAccuracySettingsGroupBox.Controls.Add(this.scxiModuleCheckBox);
-            this.highAccuracySettingsGroupBox.Controls.Add(this.autoZeroModeLabel);
-            this.highAccuracySettingsGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.highAccuracySettingsGroupBox.Location = new System.Drawing.Point(256, 8);
-            this.highAccuracySettingsGroupBox.Name = "highAccuracySettingsGroupBox";
-            this.highAccuracySettingsGroupBox.Size = new System.Drawing.Size(232, 98);
-            this.highAccuracySettingsGroupBox.TabIndex = 6;
-            this.highAccuracySettingsGroupBox.TabStop = false;
-            this.highAccuracySettingsGroupBox.Text = "High Accuracy Settings";
-            // 
-            // autoZeroModeComboBox
-            // 
-            this.autoZeroModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.autoZeroModeComboBox.Items.AddRange(new object[] {
-            "None",
-            "Once"});
-            this.autoZeroModeComboBox.Location = new System.Drawing.Point(120, 56);
-            this.autoZeroModeComboBox.Name = "autoZeroModeComboBox";
-            this.autoZeroModeComboBox.Size = new System.Drawing.Size(104, 21);
-            this.autoZeroModeComboBox.TabIndex = 3;
-            // 
-            // scxiModuleLabel
-            // 
-            this.scxiModuleLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.scxiModuleLabel.Location = new System.Drawing.Point(16, 28);
-            this.scxiModuleLabel.Name = "scxiModuleLabel";
-            this.scxiModuleLabel.Size = new System.Drawing.Size(100, 16);
-            this.scxiModuleLabel.TabIndex = 0;
-            this.scxiModuleLabel.Text = "SCXI Module?:";
-            // 
-            // scxiModuleCheckBox
-            // 
-            this.scxiModuleCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.scxiModuleCheckBox.Location = new System.Drawing.Point(120, 24);
-            this.scxiModuleCheckBox.Name = "scxiModuleCheckBox";
-            this.scxiModuleCheckBox.Size = new System.Drawing.Size(16, 24);
-            this.scxiModuleCheckBox.TabIndex = 1;
-            this.scxiModuleCheckBox.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // autoZeroModeLabel
-            // 
-            this.autoZeroModeLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.autoZeroModeLabel.Location = new System.Drawing.Point(16, 58);
-            this.autoZeroModeLabel.Name = "autoZeroModeLabel";
-            this.autoZeroModeLabel.Size = new System.Drawing.Size(88, 16);
-            this.autoZeroModeLabel.TabIndex = 2;
-            this.autoZeroModeLabel.Text = "Auto Zero Mode:";
             // 
             // acquisitionResultsGroupBox
             // 
-            this.acquisitionResultsGroupBox.Controls.Add(this.resultLabel);
-            this.acquisitionResultsGroupBox.Controls.Add(this.acquisitionDataGrid);
+            this.acquisitionResultsGroupBox.Controls.Add(this.channelsflowLayoutPanel);
             this.acquisitionResultsGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.acquisitionResultsGroupBox.Location = new System.Drawing.Point(256, 120);
+            this.acquisitionResultsGroupBox.Location = new System.Drawing.Point(40, 53);
             this.acquisitionResultsGroupBox.Name = "acquisitionResultsGroupBox";
-            this.acquisitionResultsGroupBox.Size = new System.Drawing.Size(280, 248);
+            this.acquisitionResultsGroupBox.Size = new System.Drawing.Size(686, 375);
             this.acquisitionResultsGroupBox.TabIndex = 7;
             this.acquisitionResultsGroupBox.TabStop = false;
             this.acquisitionResultsGroupBox.Text = "Acquisition Results";
             // 
-            // resultLabel
+            // channelsflowLayoutPanel
             // 
-            this.resultLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.resultLabel.Location = new System.Drawing.Point(16, 24);
-            this.resultLabel.Name = "resultLabel";
-            this.resultLabel.Size = new System.Drawing.Size(96, 16);
-            this.resultLabel.TabIndex = 0;
-            this.resultLabel.Text = "Acquisition Data:";
-            // 
-            // acquisitionDataGrid
-            // 
-            this.acquisitionDataGrid.AllowSorting = false;
-            this.acquisitionDataGrid.DataMember = "";
-            this.acquisitionDataGrid.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-            this.acquisitionDataGrid.Location = new System.Drawing.Point(16, 40);
-            this.acquisitionDataGrid.Name = "acquisitionDataGrid";
-            this.acquisitionDataGrid.ParentRowsVisible = false;
-            this.acquisitionDataGrid.ReadOnly = true;
-            this.acquisitionDataGrid.Size = new System.Drawing.Size(256, 200);
-            this.acquisitionDataGrid.TabIndex = 1;
-            this.acquisitionDataGrid.TabStop = false;
+            this.channelsflowLayoutPanel.Controls.Add(this.channelParametersGroupBox);
+            this.channelsflowLayoutPanel.Location = new System.Drawing.Point(6, 19);
+            this.channelsflowLayoutPanel.Name = "channelsflowLayoutPanel";
+            this.channelsflowLayoutPanel.Size = new System.Drawing.Size(662, 350);
+            this.channelsflowLayoutPanel.TabIndex = 8;
             // 
             // channelParametersGroupBox
             // 
@@ -330,12 +242,13 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
             this.channelParametersGroupBox.Controls.Add(this.minimumLabel);
             this.channelParametersGroupBox.Controls.Add(this.physicalChannelLabel);
             this.channelParametersGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.channelParametersGroupBox.Location = new System.Drawing.Point(8, 8);
+            this.channelParametersGroupBox.Location = new System.Drawing.Point(3, 3);
             this.channelParametersGroupBox.Name = "channelParametersGroupBox";
             this.channelParametersGroupBox.Size = new System.Drawing.Size(232, 122);
             this.channelParametersGroupBox.TabIndex = 2;
             this.channelParametersGroupBox.TabStop = false;
             this.channelParametersGroupBox.Text = "Channel Parameters";
+            this.channelParametersGroupBox.Visible = false;
             // 
             // physicalChannelComboBox
             // 
@@ -416,7 +329,7 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
             // startButton
             // 
             this.startButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.startButton.Location = new System.Drawing.Point(288, 384);
+            this.startButton.Location = new System.Drawing.Point(263, 428);
             this.startButton.Name = "startButton";
             this.startButton.Size = new System.Drawing.Size(80, 24);
             this.startButton.TabIndex = 0;
@@ -427,197 +340,70 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
             // 
             this.stopButton.Enabled = false;
             this.stopButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.stopButton.Location = new System.Drawing.Point(424, 384);
+            this.stopButton.Location = new System.Drawing.Point(372, 428);
             this.stopButton.Name = "stopButton";
             this.stopButton.Size = new System.Drawing.Size(80, 24);
             this.stopButton.TabIndex = 1;
             this.stopButton.Text = "Stop";
             this.stopButton.Click += new System.EventHandler(this.stopButton_Click);
             // 
-            // timingParametersGroupBox
+            // DAQmenuStrip
             // 
-            this.timingParametersGroupBox.Controls.Add(this.rateNumeric);
-            this.timingParametersGroupBox.Controls.Add(this.rateLabel);
-            this.timingParametersGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.timingParametersGroupBox.Location = new System.Drawing.Point(8, 144);
-            this.timingParametersGroupBox.Name = "timingParametersGroupBox";
-            this.timingParametersGroupBox.Size = new System.Drawing.Size(232, 56);
-            this.timingParametersGroupBox.TabIndex = 3;
-            this.timingParametersGroupBox.TabStop = false;
-            this.timingParametersGroupBox.Text = "Timing Parameters";
+            this.DAQmenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.DAQmenuStrip.Location = new System.Drawing.Point(0, 0);
+            this.DAQmenuStrip.Name = "DAQmenuStrip";
+            this.DAQmenuStrip.Size = new System.Drawing.Size(790, 24);
+            this.DAQmenuStrip.TabIndex = 9;
+            this.DAQmenuStrip.Text = "menuStrip1";
             // 
-            // rateNumeric
+            // fileToolStripMenuItem
             // 
-            this.rateNumeric.DecimalPlaces = 2;
-            this.rateNumeric.Location = new System.Drawing.Point(120, 24);
-            this.rateNumeric.Maximum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            0});
-            this.rateNumeric.Name = "rateNumeric";
-            this.rateNumeric.Size = new System.Drawing.Size(104, 20);
-            this.rateNumeric.TabIndex = 1;
-            this.rateNumeric.Value = new decimal(new int[] {
-            35,
-            0,
-            0,
-            65536});
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
             // 
-            // rateLabel
+            // newToolStripMenuItem
             // 
-            this.rateLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.rateLabel.Location = new System.Drawing.Point(16, 26);
-            this.rateLabel.Name = "rateLabel";
-            this.rateLabel.Size = new System.Drawing.Size(56, 16);
-            this.rateLabel.TabIndex = 0;
-            this.rateLabel.Text = "Rate (Hz):";
+            this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.channelToolStripMenuItem});
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.newToolStripMenuItem.Text = "New";
             // 
-            // thermocoupleParametersGroupBox
+            // channelToolStripMenuItem
             // 
-            this.thermocoupleParametersGroupBox.Controls.Add(this.thermocoupleTypeComboBox);
-            this.thermocoupleParametersGroupBox.Controls.Add(this.thermocoupleTypeLabel);
-            this.thermocoupleParametersGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.thermocoupleParametersGroupBox.Location = new System.Drawing.Point(8, 216);
-            this.thermocoupleParametersGroupBox.Name = "thermocoupleParametersGroupBox";
-            this.thermocoupleParametersGroupBox.Size = new System.Drawing.Size(232, 56);
-            this.thermocoupleParametersGroupBox.TabIndex = 4;
-            this.thermocoupleParametersGroupBox.TabStop = false;
-            this.thermocoupleParametersGroupBox.Text = "Thermocouple Parameters";
-            // 
-            // thermocoupleTypeComboBox
-            // 
-            this.thermocoupleTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.thermocoupleTypeComboBox.Items.AddRange(new object[] {
-            "B",
-            "E",
-            "J",
-            "K",
-            "N",
-            "R",
-            "S",
-            "T"});
-            this.thermocoupleTypeComboBox.Location = new System.Drawing.Point(120, 24);
-            this.thermocoupleTypeComboBox.Name = "thermocoupleTypeComboBox";
-            this.thermocoupleTypeComboBox.Size = new System.Drawing.Size(104, 21);
-            this.thermocoupleTypeComboBox.TabIndex = 1;
-            // 
-            // thermocoupleTypeLabel
-            // 
-            this.thermocoupleTypeLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.thermocoupleTypeLabel.Location = new System.Drawing.Point(16, 26);
-            this.thermocoupleTypeLabel.Name = "thermocoupleTypeLabel";
-            this.thermocoupleTypeLabel.Size = new System.Drawing.Size(112, 16);
-            this.thermocoupleTypeLabel.TabIndex = 0;
-            this.thermocoupleTypeLabel.Text = "Thermocouple Type:";
-            // 
-            // coldJunctionParametersGroupBox
-            // 
-            this.coldJunctionParametersGroupBox.Controls.Add(this.cjcValueNumeric);
-            this.coldJunctionParametersGroupBox.Controls.Add(this.cjcValueLabel);
-            this.coldJunctionParametersGroupBox.Controls.Add(this.cjcChannelLabel);
-            this.coldJunctionParametersGroupBox.Controls.Add(this.cjcSourceLabel);
-            this.coldJunctionParametersGroupBox.Controls.Add(this.cjcSourceComboBox);
-            this.coldJunctionParametersGroupBox.Controls.Add(this.cjcChannelTextBox);
-            this.coldJunctionParametersGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.coldJunctionParametersGroupBox.Location = new System.Drawing.Point(8, 288);
-            this.coldJunctionParametersGroupBox.Name = "coldJunctionParametersGroupBox";
-            this.coldJunctionParametersGroupBox.Size = new System.Drawing.Size(232, 120);
-            this.coldJunctionParametersGroupBox.TabIndex = 5;
-            this.coldJunctionParametersGroupBox.TabStop = false;
-            this.coldJunctionParametersGroupBox.Text = "Cold Junction Parameters";
-            // 
-            // cjcValueNumeric
-            // 
-            this.cjcValueNumeric.DecimalPlaces = 2;
-            this.cjcValueNumeric.Location = new System.Drawing.Point(120, 88);
-            this.cjcValueNumeric.Name = "cjcValueNumeric";
-            this.cjcValueNumeric.Size = new System.Drawing.Size(104, 20);
-            this.cjcValueNumeric.TabIndex = 5;
-            this.cjcValueNumeric.Value = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            // 
-            // cjcValueLabel
-            // 
-            this.cjcValueLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.cjcValueLabel.Location = new System.Drawing.Point(16, 90);
-            this.cjcValueLabel.Name = "cjcValueLabel";
-            this.cjcValueLabel.Size = new System.Drawing.Size(104, 16);
-            this.cjcValueLabel.TabIndex = 4;
-            this.cjcValueLabel.Text = "CJC Value (deg C):";
-            // 
-            // cjcChannelLabel
-            // 
-            this.cjcChannelLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.cjcChannelLabel.Location = new System.Drawing.Point(16, 58);
-            this.cjcChannelLabel.Name = "cjcChannelLabel";
-            this.cjcChannelLabel.Size = new System.Drawing.Size(80, 16);
-            this.cjcChannelLabel.TabIndex = 2;
-            this.cjcChannelLabel.Text = "CJC Channel:";
-            // 
-            // cjcSourceLabel
-            // 
-            this.cjcSourceLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.cjcSourceLabel.Location = new System.Drawing.Point(16, 26);
-            this.cjcSourceLabel.Name = "cjcSourceLabel";
-            this.cjcSourceLabel.Size = new System.Drawing.Size(88, 16);
-            this.cjcSourceLabel.TabIndex = 0;
-            this.cjcSourceLabel.Text = "CJC Source:";
-            // 
-            // cjcSourceComboBox
-            // 
-            this.cjcSourceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cjcSourceComboBox.Items.AddRange(new object[] {
-            "Channel",
-            "Constant Value",
-            "Internal"});
-            this.cjcSourceComboBox.Location = new System.Drawing.Point(120, 24);
-            this.cjcSourceComboBox.Name = "cjcSourceComboBox";
-            this.cjcSourceComboBox.Size = new System.Drawing.Size(104, 21);
-            this.cjcSourceComboBox.TabIndex = 1;
-            this.cjcSourceComboBox.SelectedIndexChanged += new System.EventHandler(this.cjcSourceComboBox_SelectedIndexChanged);
-            // 
-            // cjcChannelTextBox
-            // 
-            this.cjcChannelTextBox.Location = new System.Drawing.Point(120, 56);
-            this.cjcChannelTextBox.Name = "cjcChannelTextBox";
-            this.cjcChannelTextBox.Size = new System.Drawing.Size(104, 20);
-            this.cjcChannelTextBox.TabIndex = 3;
+            this.channelToolStripMenuItem.Name = "channelToolStripMenuItem";
+            this.channelToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.channelToolStripMenuItem.Text = "Channel";
+            this.channelToolStripMenuItem.Click += new System.EventHandler(this.channelToolStripMenuItem_Click);
             // 
             // MainForm
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(546, 416);
-            this.Controls.Add(this.highAccuracySettingsGroupBox);
+            this.ClientSize = new System.Drawing.Size(790, 504);
             this.Controls.Add(this.acquisitionResultsGroupBox);
-            this.Controls.Add(this.channelParametersGroupBox);
             this.Controls.Add(this.startButton);
             this.Controls.Add(this.stopButton);
-            this.Controls.Add(this.timingParametersGroupBox);
-            this.Controls.Add(this.thermocoupleParametersGroupBox);
-            this.Controls.Add(this.coldJunctionParametersGroupBox);
+            this.Controls.Add(this.DAQmenuStrip);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.DAQmenuStrip;
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Continuous Acquisition of Thermocouple Samples - Internal Clock";
-            this.highAccuracySettingsGroupBox.ResumeLayout(false);
             this.acquisitionResultsGroupBox.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.acquisitionDataGrid)).EndInit();
+            this.channelsflowLayoutPanel.ResumeLayout(false);
             this.channelParametersGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.minimumValueNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.maximumValueNumeric)).EndInit();
-            this.timingParametersGroupBox.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.rateNumeric)).EndInit();
-            this.thermocoupleParametersGroupBox.ResumeLayout(false);
-            this.coldJunctionParametersGroupBox.ResumeLayout(false);
-            this.coldJunctionParametersGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cjcValueNumeric)).EndInit();
+            this.DAQmenuStrip.ResumeLayout(false);
+            this.DAQmenuStrip.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
         #endregion
@@ -635,128 +421,16 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
 
         private void startButton_Click(object sender, System.EventArgs e)
         {
-            startButton.Enabled = false;
-            stopButton.Enabled = true;
-            
-
-            try 
+            if(daqmxChannels.Count == 0)
             {
-                myTask = new Task();
-
-                AIChannel myChannel;
-                AIChannel[] AIChannels;
-
-                AIChannels = new AIChannel[NumberOfChannels];
-                
-                
-
-
-
-                AIThermocoupleType thermocoupleType;
-                AIAutoZeroMode autoZeroMode;
-
-                switch (thermocoupleTypeComboBox.SelectedIndex)
-                {
-                    case 0:
-                        thermocoupleType = AIThermocoupleType.B;
-                        break;
-                    case 1:
-                        thermocoupleType = AIThermocoupleType.E;
-                        break;
-                    case 2:
-                        thermocoupleType = AIThermocoupleType.J;
-                        break;
-                    case 3:
-                        thermocoupleType = AIThermocoupleType.K;
-                        break;
-                    case 4:
-                        thermocoupleType = AIThermocoupleType.N;
-                        break;
-                    case 5:
-                        thermocoupleType = AIThermocoupleType.R;
-                        break;
-                    case 6:
-                        thermocoupleType = AIThermocoupleType.S;
-                        break;
-                    case 7:
-                    default: 
-                        thermocoupleType = AIThermocoupleType.T;
-                        break;
-                }
-
-                switch (cjcSourceComboBox.SelectedIndex)
-                {
-                    case 0: // Channel
-                       for(int i = 0; i < NumberOfChannels;i++)
-                        {
-                            AIChannels[i] = myTask.AIChannels.CreateThermocoupleChannel(_channels[i],
-                                "", Convert.ToDouble(minimumValueNumeric.Value), Convert.ToDouble(maximumValueNumeric.Value),
-                             thermocoupleType, AITemperatureUnits.DegreesC, cjcChannelTextBox.Text);
-                        }
-                        break;
-                    case 1: // Constant
-
-                        for (int i = 0; i < NumberOfChannels; i++)
-                        {
-                            AIChannels[i] = myTask.AIChannels.CreateThermocoupleChannel(_channels[i],
-                            "", Convert.ToDouble(minimumValueNumeric.Value), Convert.ToDouble(maximumValueNumeric.Value),
-                            thermocoupleType, AITemperatureUnits.DegreesC, Convert.ToDouble(cjcValueNumeric.Value));
-                        }
-
-                        break;
-                    case 2: // Internal
-                    default:
-                        for (int i = 0; i < NumberOfChannels; i++)
-                        {
-                            AIChannels[i] = myTask.AIChannels.CreateThermocoupleChannel(_channels[i],
-                             "", Convert.ToDouble(minimumValueNumeric.Value), Convert.ToDouble(maximumValueNumeric.Value),
-                            thermocoupleType, AITemperatureUnits.DegreesC);
-                        }
-                        break;
-                }                
-
-                if (scxiModuleCheckBox.Checked)
-                {
-                    switch (autoZeroModeComboBox.SelectedIndex) 
-                    {
-                        case 0:
-                            autoZeroMode = AIAutoZeroMode.None;
-                            break;
-                        case 1:
-                        default: 
-                            autoZeroMode = AIAutoZeroMode.Once;
-                            break;
-                    }
-                    
-                    for (int i = 0; i < NumberOfChannels; i++)
-                        AIChannels[i].AutoZeroMode = autoZeroMode;                      
-                }
-
-                myTask.Timing.ConfigureSampleClock("",Convert.ToDouble(rateNumeric.Value),
-                    SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, 1000);
-
-                myTask.Control(TaskAction.Verify);
-
-                analogInReader = new AnalogMultiChannelReader(myTask.Stream);
-                
-                runningTask = myTask;
-                
-                InitializeDataTable(myTask.AIChannels, ref dataTable);
-                acquisitionDataGrid.DataSource = dataTable;
-
-                // Use SynchronizeCallbacks to specify that the object 
-                // marshals callbacks across threads appropriately.
-                analogInReader.SynchronizeCallbacks = true;
-                analogInReader.BeginReadWaveform(10, myAsyncCallback, myTask);
-            }
-            catch (DaqException exception)
+                MessageBox.Show("No channels added");
+            }else
             {
-                MessageBox.Show(exception.Message);
-                myTask.Dispose();
-                startButton.Enabled = true;
-                stopButton.Enabled = false;
-                runningTask = null;
+                startButton.Enabled = false;
+                stopButton.Enabled = true;
+                analogInReader.BeginReadWaveform(1, myAsyncCallback, myTask);
             }
+
         }
 
         private void stopButton_Click(object sender, System.EventArgs e)
@@ -769,6 +443,7 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
 
         private void AnalogInCallback(IAsyncResult ar)
         {
+            double dt;
             try
             {
                 if (runningTask != null && runningTask == ar.AsyncState)
@@ -777,7 +452,13 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
                   
                     dataToDataTable(data, ref dataTable);
 
-                    analogInReader.BeginMemoryOptimizedReadWaveform(10, myAsyncCallback, myTask, data);
+                    foreach(DAQmxChannel dAQmx in daqmxChannels)
+                    {
+                        dt = dataToValue(data, dAQmx.getPhysicalChannel());
+                        dAQmx.TemperatureValueLabel.Text =Math.Round(dt,4).ToString();
+                    }
+
+                    analogInReader.BeginMemoryOptimizedReadWaveform(1, myAsyncCallback, myTask, data);
                 }
             }
             catch (DaqException exception)
@@ -793,19 +474,19 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
 
         private void cjcSourceComboBox_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            switch (cjcSourceComboBox.SelectedIndex)
+            switch (GlobalParam.cjcSourceComboBox.SelectedIndex)
             {
                 case 0: // Channel
-                    cjcChannelTextBox.Enabled = true;
-                    cjcValueNumeric.Enabled = false;
+                    GlobalParam.cjcChannelTextBox.Enabled = true;
+                    GlobalParam.cjcValueNumeric.Enabled = false;
                     break;
                 case 1: // Constant 
-                    cjcChannelTextBox.Enabled = false;
-                    cjcValueNumeric.Enabled = true;
+                    GlobalParam.cjcChannelTextBox.Enabled = false;
+                    GlobalParam.cjcValueNumeric.Enabled = true;
                     break;
                 case 2: // Internal
-                    cjcChannelTextBox.Enabled = false;
-                    cjcValueNumeric.Enabled = false;
+                    GlobalParam.cjcChannelTextBox.Enabled = false;
+                    GlobalParam.cjcValueNumeric.Enabled = false;
                     break;
             }
         }
@@ -837,6 +518,18 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
             }
         }
 
+        private double dataToValue(AnalogWaveform<double>[] sourceArray, string physicalChannel)
+        {
+
+            foreach (AnalogWaveform<double> waveform in sourceArray)
+            {
+                if(waveform.ChannelName == physicalChannel)
+                {
+                    return waveform.Samples[0].Value; ;
+                } 
+            }
+            return 0;
+        }
         private void dataToDataTable(AnalogWaveform<double>[] sourceArray, ref DataTable dataTable)
         {
             // Iterate over channels
@@ -854,6 +547,139 @@ namespace NationalInstruments.Examples.ContAcqThermocoupleSamples_IntClk
             }
         }
 
+        private void channelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
+            if(daqmxChannels.Count == 0)
+            {
+                GlobalParam.Show();
+            }
+            else
+            {
+                daqmxChannels.Add(new DAQmxChannel());
+                daqmxChannels.Last().getNewChannelForm().addChannelButton.Click += AddChannelButton_Click;
+            }
+            
+        }
+
+        private void SubmitButton_Click(object sender, EventArgs e)
+        {
+            GlobalParam.Hide();
+            daqmxChannels.Add(new DAQmxChannel());
+            daqmxChannels.Last().getNewChannelForm().addChannelButton.Click += AddChannelButton_Click;
+        }
+
+        private void AddChannelButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                myTask = new Task();
+
+                DAQmxChannel dAQmx = daqmxChannels.Last();
+                AIChannel[] AIChannels;
+
+                AIChannels = new AIChannel[NumberOfChannels];
+                AIThermocoupleType thermocoupleType;
+                AIAutoZeroMode autoZeroMode;
+
+                switch (GlobalParam.thermocoupleTypeComboBox.SelectedIndex)
+                {
+                    case 0:
+                        thermocoupleType = AIThermocoupleType.B;
+                        break;
+                    case 1:
+                        thermocoupleType = AIThermocoupleType.E;
+                        break;
+                    case 2:
+                        thermocoupleType = AIThermocoupleType.J;
+                        break;
+                    case 3:
+                        thermocoupleType = AIThermocoupleType.K;
+                        break;
+                    case 4:
+                        thermocoupleType = AIThermocoupleType.N;
+                        break;
+                    case 5:
+                        thermocoupleType = AIThermocoupleType.R;
+                        break;
+                    case 6:
+                        thermocoupleType = AIThermocoupleType.S;
+                        break;
+                    case 7:
+                    default:
+                        thermocoupleType = AIThermocoupleType.T;
+                        break;
+                }
+
+                switch (GlobalParam.cjcSourceComboBox.SelectedIndex)
+                {
+                    case 0: // Channel
+                        for (int i = 0; i < NumberOfChannels; i++)
+                        {
+                            AIChannels[i] = myTask.AIChannels.CreateThermocoupleChannel(_channels[i],
+                                "", Convert.ToDouble(minimumValueNumeric.Value), Convert.ToDouble(maximumValueNumeric.Value),
+                             thermocoupleType, AITemperatureUnits.DegreesC, GlobalParam.cjcChannelTextBox.Text);
+                        }
+                        break;
+                    case 1: // Constant
+
+                        for (int i = 0; i < NumberOfChannels; i++)
+                        {
+                            AIChannels[i] = myTask.AIChannels.CreateThermocoupleChannel(_channels[i],
+                            "", Convert.ToDouble(minimumValueNumeric.Value), Convert.ToDouble(maximumValueNumeric.Value),
+                            thermocoupleType, AITemperatureUnits.DegreesC, Convert.ToDouble(GlobalParam.cjcValueNumeric.Value));
+                        }
+
+                        break;
+                    case 2: // Internal
+                        dAQmx.aIChannel = myTask.AIChannels.CreateThermocoupleChannel(dAQmx.getPhysicalChannel(),
+                             "", Convert.ToDouble(minimumValueNumeric.Value), Convert.ToDouble(maximumValueNumeric.Value),
+                            thermocoupleType, AITemperatureUnits.DegreesC);
+                        break;
+                }
+
+                if (GlobalParam.scxiModuleCheckBox.Checked)
+                {
+                    switch (GlobalParam.autoZeroModeComboBox.SelectedIndex)
+                    {
+                        case 0:
+                            autoZeroMode = AIAutoZeroMode.None;
+                            break;
+                        case 1:
+                        default:
+                            autoZeroMode = AIAutoZeroMode.Once;
+                            break;
+                    }
+                    dAQmx.aIChannel.AutoZeroMode = autoZeroMode;
+                }
+
+                myTask.Timing.ConfigureSampleClock("", Convert.ToDouble(GlobalParam.rateNumeric.Value),
+                    SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, 1);
+
+                myTask.Control(TaskAction.Verify);
+
+                analogInReader = new AnalogMultiChannelReader(myTask.Stream);
+
+                runningTask = myTask;
+
+                InitializeDataTable(myTask.AIChannels, ref dataTable);
+
+
+                // Use SynchronizeCallbacks to specify that the object 
+                // marshals callbacks across threads appropriately.
+                analogInReader.SynchronizeCallbacks = true;
+            //    analogInReader.BeginReadWaveform(1, myAsyncCallback, myTask);
+                this.channelsflowLayoutPanel.Controls.Add(dAQmx.channelGroupBox);
+
+            }
+            catch (DaqException exception)
+            {
+                MessageBox.Show(exception.Message);
+                myTask.Dispose();
+                startButton.Enabled = true;
+                stopButton.Enabled = false;
+                runningTask = null;
+            }
+        }
     }
 }
