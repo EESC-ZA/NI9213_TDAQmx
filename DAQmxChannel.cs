@@ -107,9 +107,10 @@ namespace DAQmxProj
                 PhysicalChannel = NewChannelForm.physicalChannelComboBox.Text;
                 MinimumTemp = (double)NewChannelForm.minimumValueNumeric.Value;
                 MaximumTemp = (double)NewChannelForm.maximumValueNumeric.Value;
+                channelName = NewChannelForm.channelNameTextBox.Text;
 
 
-                if(channelName == null)
+                if (NewChannelForm.channelNameTextBox.Text.Length <=0)
                     channelName = "AI" + NewChannelForm.physicalChannelComboBox.SelectedIndex.ToString();
 
                 PhysicalChannelValueLabel.Text = channelName;
